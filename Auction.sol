@@ -41,6 +41,15 @@ contract Auction {
     function propose() payable public {
         require(msg.sender != owner, "Chi ha indetto l'asta non può fare proposte");
         require(now <= ending_time, "Tempo finito");
+        /* Verifica se sono già arrivate proposte da quell'indirizzo */ 
+        if (proposals[msg.sender] > 0) {
+            require(msg.value > proposals[msg.sender], "La tua proposta deve essere maggiore della precedente");
+            /* Se aveva già effettuato una proposta ripende gli ether della proposta
+            percedente ed effettua la nuova proposta */
+            uint money = proposals[msg.sender];
+            proposals[msg.sender] = 0;
+            msg.sender.transfer(money);
+        }
         proposals[msg.sender] = msg.value;
         /* Se arriva una proposta più alta della massima proposta attuale
         si aggiornano proposta massima e l'indirizzo che l'ha effettuata */
