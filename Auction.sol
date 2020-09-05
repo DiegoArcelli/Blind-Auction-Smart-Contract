@@ -5,7 +5,9 @@ contract Auction {
     
     // Oggetto messo all'asta
     struct Object {
+        // Id dell'oggetto
         uint id;
+        // Descrizione dell'oggetto
         string  description;
     }
     
@@ -17,16 +19,17 @@ contract Auction {
     address private current_winner;
     bool valid;
     
-    //Evento per segnalare l'inizio dell'asta
+    // Evento per segnalare l'inizio dell'asta
     event Start(address payable owner, string description, uint starting_price, uint ending_time);
-    //Evento per segnalare l'esito dell'asta
+    // Evento per segnalare l'esito dell'asta
     event Close(address payable owner, address winner, string description, uint price);
+    // Evento per segnalare che l'asta si è conclusa senza vincitori
     event NoWinner(address payable owner, string description);
     
-    //Tabella delle proposte
+    // Tabella delle proposte
     mapping(address => uint) proposals;
     
-    //Costruttore del contratto
+    // Costruttore del contratto
     constructor(uint _ending_time, uint _starting_price, string memory description, uint id) public {
         owner = msg.sender;
         ending_time = now +_ending_time;
@@ -37,7 +40,7 @@ contract Auction {
         emit Start(owner, description, starting_price, ending_time);
     }
     
-    //Funzione che per fare una proposta
+    // Funzione che per fare una proposta
     function propose() payable public {
         require(msg.sender != owner, "Chi ha indetto l'asta non può fare proposte");
         require(now <= ending_time, "Tempo finito");
@@ -60,7 +63,7 @@ contract Auction {
         }
     }
     
-    //Funzione per chiudere l'asta
+    // Funzione per chiudere l'asta
     function close() payable public {
         require(msg.sender == owner, "Solo chi ha indetto l'asta può terminarla");
         require(now > ending_time, "Tempo ancora non terminato");
@@ -78,7 +81,7 @@ contract Auction {
         }
     }
     
-    //Funzione per restituire gli ether a chi non ha vinto
+    // Funzione per restituire gli ether a chi non ha vinto
     function retake() payable public {
         require(now > ending_time, "Tempo ancora non terminato");
         require(msg.sender != owner, "Chi ha indetto l'asta non può fare ritirare");
